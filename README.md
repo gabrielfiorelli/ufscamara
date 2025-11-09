@@ -2,8 +2,8 @@
 
 ## Dependencias
 
-pip3 install pandas
-pip3 install pyarrow
+* pip3 install pandas
+* pip3 install pyarrow
 
 ## API Camâra
 
