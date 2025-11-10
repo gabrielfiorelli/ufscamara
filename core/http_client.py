@@ -9,7 +9,7 @@ import time
 import json
 import requests
 from requests.exceptions import RequestException, Timeout
-from util.logger_config import logger
+from util.logger import logger
 
 class http_client:
     def __init__(self, timeout=60, max_retries=3, retry_wait=30, headers=None):

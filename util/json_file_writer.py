@@ -7,7 +7,7 @@ Created on Wed Jul 10 00:10:55 2024
 
 import json
 import os
-from util.logger_config import logger
+from util.logger import logger
 
 def write_json_content_file_api_v2(json_content, date_part, file_type):
     logger.info('[write_json_content_file] - Starting')

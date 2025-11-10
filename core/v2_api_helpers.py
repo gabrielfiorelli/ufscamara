@@ -4,6 +4,9 @@ Created on Wed Oct 22 15:32:56 2025
 
 @author: BlinkPC
 """
+from util import config_reader
+from core.http_client import http_client
+#from core.v2_api_helpers import build_params
 
 def build_params(defaults: dict = None, overrides: dict = None, exclude: list = None) -> dict:
 
@@ -40,9 +43,7 @@ def build_api_call(endpoint: str,
         dict | list: Se paginate=False, retorna o JSON original.
                      Se paginate=True, retorna uma lista com todos os dados concatenados.
     """
-    from util import config_reader
-    from core.http_client import http_client
-    from core.v2_api_helpers import build_params
+    
     
     config = config_reader.load_config()
     _http = http_client(timeout = config["technical_config"]["timeout"],

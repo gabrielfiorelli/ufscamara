@@ -6,7 +6,6 @@ Created on Sat Aug 23 19:02:02 2025
 """
 
 from util import config_reader
-
 from core.ufscamara import Ufscamara
 
 ################################################################
@@ -44,5 +43,5 @@ ufscamara = Ufscamara(config)
 resultado = ufscamara.download_todos_arquivos_votacao_v2()
 resultado = ufscamara.download_todos_arquivos_proposicoes_v2()
 
-votacoes_df = ufscamara.carregar_dataframe('votacoes')
+votacoes_df = ufscamara.reader.carregar_dataframe('votacoes')
 resultado = ufscamara.download_arquivos_votacoes_votos_v2(votacoes_df['id'])

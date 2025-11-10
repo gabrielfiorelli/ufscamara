@@ -6,14 +6,13 @@ Created on Tue Aug 26 21:09:29 2025
 """
 
 from core import api_camara_v2
-from util import json_file_reader as fr
+from data import data_manager
 from util import json_file_writer as fw
-from util.logger_config import logger
+from util import file_utils as fu
+from util.logger import logger
 from datetime import date
 from dateutil.relativedelta import relativedelta
-import pandas as pd
 import time
-
 import os
 
 class Ufscamara:
@@ -37,6 +36,7 @@ class Ufscamara:
         self.tc = config["technical_config"]
         self.create_folders()
         self.v2 = api_camara_v2
+        self.data_manager = data_manager.DataManager(config)
 
     def create_folders(self):
         folders = [
@@ -63,8 +63,6 @@ class Ufscamara:
     def format_date(self, date):
         return date.strftime("%Y-%m-%d")
     
-    
-    
     def download_tudo(self, endpoints = None):
         
         ################################################################
@@ -78,7 +76,7 @@ class Ufscamara:
             logger.info(f'[{self.class_name}] - Resultado de votacoes: {result}')
         
         logger.info(f'[{self.class_name}] - Filtrando ids de votacoes')
-        votacoes_ids = self.carregar_votacoes()["id"].unique().tolist()
+        votacoes_ids = self.data_manager.carregar_votacoes()["id"].unique().tolist()
         
         if('votacoes_id' in endpoints):
             logger.info(f'[{self.class_name}] - Buscando todas as votacoes.detalhes')
@@ -109,7 +107,7 @@ class Ufscamara:
             logger.info(f'[{self.class_name}] - Resultado de proposicoes: {result}')
         
         logger.info(f'[{self.class_name}] - Filtrando ids de proposicoes')
-        proposicoes_ids = self.carregar_proposicoes()["id"].unique().tolist()
+        proposicoes_ids = self.data_manager.carregar_proposicoes()["id"].unique().tolist()
             
         if('proposicoes_id' in endpoints):
             logger.info(f'[{self.class_name}] - Buscando todas as proposicoes.id')
@@ -139,6 +137,9 @@ class Ufscamara:
             result = self.download_todos_arquivos_deputados_v2()
             logger.info(f'[{self.class_name}] - Resultado de deputados: {result}')
         
+        ################################################################
+        ## Legislaturas
+        ################################################################
         
         if('legislaturas' in endpoints):
             logger.info(f'[{self.class_name}] - Buscando todas as legislaturas')
@@ -189,7 +190,7 @@ class Ufscamara:
         
         logger.info(f'[{self.class_name}] - Downloading {type_name}')
         
-        votacoes_dict = fr.get_votacoes_dictionary()
+        votacoes_dict = fu.get_votacoes_dictionary()
         
         # Loop mes a mes
         delta = relativedelta(months=1)
@@ -257,7 +258,7 @@ class Ufscamara:
         ids_nao_encontrados = 0
         
         total = len(ids_votacoes)
-        votos_dict = fr.get_votacoes_id_dictionary()
+        votos_dict = fu.get_votacoes_id_dictionary()
         
         for id_votacao in ids_votacoes:
             ids_verificados += 1
@@ -315,7 +316,7 @@ class Ufscamara:
         ids_nao_encontrados = 0
         
         total = len(ids_votacoes)
-        votos_dict = fr.get_votacoes_votos_dictionary()
+        votos_dict = fu.get_votacoes_votos_dictionary()
         
         for id_votacao in ids_votacoes:
             ids_verificados += 1
@@ -378,7 +379,7 @@ class Ufscamara:
         ids_nao_encontrados = 0
         
         total = len(ids_votacoes)
-        votacoes_dict = fr.get_votacoes_orientacoes_dictionary()
+        votacoes_dict = fu.get_votacoes_orientacoes_dictionary()
         
         for id_votacao in ids_votacoes:
             ids_verificados += 1
@@ -453,7 +454,7 @@ class Ufscamara:
         anos_baixados = 0
         anos_nao_encontrados = 0
         
-        file_dict = fr.get_proposicoes_dictionary()
+        file_dict = fu.get_proposicoes_dictionary()
         
         for ano_busca in range(1989, date.today().year + 1):
             anos_verificados += 1
@@ -514,7 +515,7 @@ class Ufscamara:
         ids_nao_encontrados = 0
         
         total = len(ids)
-        file_dict = fr.get_proposicoes_id_dictionary()
+        file_dict = fu.get_proposicoes_id_dictionary()
         
         for _id in ids:
             ids_verificados += 1
@@ -563,7 +564,7 @@ class Ufscamara:
         ids_nao_encontrados = 0
         
         total = len(ids)
-        file_dict = fr.get_proposicoes_autores_dictionary()
+        file_dict = fu.get_proposicoes_autores_dictionary()
            
         for _id in ids:
             ids_verificados += 1
@@ -623,7 +624,7 @@ class Ufscamara:
         ids_nao_encontrados = 0
         
         total = len(ids)
-        file_dict = fr.get_proposicoes_temas_dictionary()
+        file_dict = fu.get_proposicoes_temas_dictionary()
            
         for _id in ids:
             ids_verificados += 1
@@ -679,145 +680,6 @@ class Ufscamara:
             
         return result
     
-    
-    
-    def carregar_votacoes(self):
-        votacoes_json = fr.read_votacoes_json_file_v2()
-        votacoes_df = pd.DataFrame(votacoes_json)
-        
-        votacoes_df['idProposicao'] = votacoes_df["id"].str.split("-").str[0].astype(str)
-        
-        logger.info(f'[Loading][Explore] - Encontradas {len(votacoes_df)} votacoes.')
-
-        return votacoes_df
-    
-    def carregar_votacoes_id(self):
-        votacoes_id_json = fr.read_votacoes_id_json_file_v2()
-        
-        rows = []
-        
-        for votacao in votacoes_id_json:
-            votacao_tmp = pd.json_normalize(votacao["dados"])
-            votacao_tmp["idProposicao"] = votacao["idProposicao"]
-            votacao_tmp["idVotacao"] = votacao["idVotacao"]
-            rows.append(votacao_tmp)
-    
-        votacoes_id_df = pd.concat(rows, ignore_index=True)
-        
-        logger.info(f'[Loading][Explore] - Encontrados {len(votacoes_id_df)} votacoes.')
-
-        return votacoes_id_df
-    
-    # TODO: Verificar
-    # As transformações deveriam estar aqui?
-    # Ou este deveria ler as coisas da forma mais pura e as transformações antes de salvar deveriam estar fora?
-    def carregar_votacoes_votos(self, start_date=None, end_date=None):
-        #TODO: Se os parametros estiverem preenchidos. Não é necessário ler tudo do disco.
-        votos_json = fr.read_votacoes_votos_json_file_v2()
-        
-        rows = []
-        
-        for votacao in votos_json:
-            votos_tmp = pd.json_normalize(votacao["votos"])
-            votos_tmp["idProposicao"] = votacao["idProposicao"]
-            votos_tmp["idVotacao"] = votacao["idVotacao"]
-            rows.append(votos_tmp)
-    
-        votos_df = pd.concat(rows, ignore_index=True)
-        logger.info(f'[Loading][Explore] - Encontrados {len(votos_df)} votos.')
-
-        return votos_df
-    
-    def carregar_votacoes_orientacoes(self, start_date=None, end_date=None):
-        #TODO: Se os parametros estiverem preenchidos. Não é necessário ler tudo do disco.
-        dados_json = fr.read_votacoes_orientacoes_json_file_v2()
-        
-        rows = []
-        
-        for orientacao in dados_json:
-            dados_tmp = pd.json_normalize(orientacao["orientacoes"])
-            dados_tmp["idProposicao"] = orientacao["idProposicao"]
-            dados_tmp["idVotacao"] = orientacao["idVotacao"]
-            rows.append(dados_tmp)
-    
-        dados_df = pd.concat(rows, ignore_index=True)
-        logger.info(f'[Loading][Explore] - Encontrados {len(dados_df)} votos.')
-
-        return dados_df
-    
-    def carregar_proposicoes(self, start_date=None, end_date=None):
-        #TODO: Se os parametros estiverem preenchidos. Não é necessário ler tudo do disco.
-        #proposicoes_json = fr.read_proposicoes_id_json_file_v2()
-        proposicoes_json = fr.read_proposicoes_json_file_v2()
-        proposicoes_df = pd.DataFrame(proposicoes_json)
-        logger.info(f'[Loading][Explore] - Encontrados {len(proposicoes_df)} proposicoes.')
-
-        return proposicoes_df
-    
-    def carregar_proposicoes_id(self, start_date=None, end_date=None):
-        #TODO: Se os parametros estiverem preenchidos. Não é necessário ler tudo do disco.
-        proposicoes_json = fr.read_proposicoes_id_json_file_v2()
-        proposicoes_df = pd.DataFrame(proposicoes_json)
-        logger.info(f'[Loading][Explore] - Encontrados {len(proposicoes_df)} proposicoes.')
-
-        return proposicoes_df
-    
-    def carregar_proposicoes_temas(self, start_date=None, end_date=None):
-        #TODO: Se os parametros estiverem preenchidos. Não é necessário ler tudo do disco.
-        proposicoes_temas_json = fr.read_proposicoes_temas_json_file_v2()
- 
-        rows = []
-        
-        for tema in proposicoes_temas_json:
-            temas_tmp = pd.json_normalize(tema["temas"])
-            temas_tmp["idProposicao"] = tema["idProposicao"]
-            rows.append(temas_tmp)
-    
-        proposicoes_temas_df = pd.concat(rows, ignore_index=True)
-        logger.info(f'[Loading][Explore] - Encontrados {len(proposicoes_temas_df)} temas de proposicoes.')
-
-        return proposicoes_temas_df
-    
-    def carregar_deputados(self):
-        #TODO: Se os parametros estiverem preenchidos. Não é necessário ler tudo do disco.
-        deputados_json = fr.read_deputados_json_file_v2()
-        deputados_df = pd.json_normalize(deputados_json)
-        logger.info(f'[Loading][Explore] - Encontrados {len(deputados_df)} deputados.')
-
-        return deputados_df
-    
-    def carregar_deputados_legislaturas(self):
-        #TODO: Se os parametros estiverem preenchidos. Não é necessário ler tudo do disco.
-        deputados_json = fr.read_deputados_legislaturas_json_file_v2()
-        deputados_df = pd.json_normalize(deputados_json)
-        logger.info(f'[Loading][Explore] - Encontrados {len(deputados_df)} deputados.')
-
-        return deputados_df
-    
-    def carregar_legislaturas(self):
-        #TODO: Se os parametros estiverem preenchidos. Não é necessário ler tudo do disco.
-        legislaturas_json = fr.read_legislaturas_json_file_v2()
-        legislaturas_df = pd.json_normalize(legislaturas_json)
-        logger.info(f'[Loading][Explore] - Encontrados {len(legislaturas_df)} legislaturas.')
-
-        return legislaturas_df
-    
-    def carregar_referencias_tiposproposicao(self):
-        #TODO: Se os parametros estiverem preenchidos. Não é necessário ler tudo do disco.
-        referencias_tiposproposicao_json = fr.read_referencias_tiposproposicao_json_file_v2()
-        referencias_tiposproposicao_df = pd.DataFrame(referencias_tiposproposicao_json)
-        logger.info(f'[Loading][Explore] - Encontrados {len(referencias_tiposproposicao_df)} tipos de proposicao.')
-
-        return referencias_tiposproposicao_df
-    
-    def existe_proxima_pagina(self, links):
-        result = next((l["href"] for l in links if l["rel"] == "next"), None)
-        
-        if result is None:
-            return False
-        
-        return True
-    
     def download_todos_arquivos_deputados_v2(self):
         type_name = 'deputados'
         
@@ -847,7 +709,7 @@ class Ufscamara:
         ids_nao_encontrados = 0
         
         total = len(ids)
-        legislaturas_dict = fr.get_deputados_legislaturas_dictionary()
+        legislaturas_dict = fu.get_deputados_legislaturas_dictionary()
            
         for _id in ids:
             ids_verificados += 1
@@ -904,7 +766,7 @@ class Ufscamara:
         ids_nao_encontrados = 0
         
         total = len(ids)
-        deputados_dict = fr.get_deputados_id_dictionary()
+        deputados_dict = fu.get_deputados_id_dictionary()
            
         for _id in ids:
             ids_verificados += 1
@@ -957,7 +819,7 @@ class Ufscamara:
         ids_nao_encontrados = 0
         arquivos_existentes = []
         
-        legislaturas_dict = fr.get_legislaturas_dictionary()
+        legislaturas_dict = fu.get_legislaturas_dictionary()
            
         for id_legislatura in ids_legislaturas:
             
@@ -1029,13 +891,6 @@ class Ufscamara:
         
         return result
     
-    def salvar_dataframe(self, df, file_name):
-        os.makedirs("dataframes", exist_ok=True)
-        df.to_json(f"dataframes/{file_name}.json", orient="records", force_ascii=False, indent=2)
-    
-    def carregar_dataframe(self, file_name):
-        df = pd.read_json(f"dataframes/{file_name}.json", orient="records")
-        return df
-        
-# ufscamara.persistencia
-# ufscamara.download
+    # def salvar_dataframe(self, df, file_name):
+    #     os.makedirs("dataframes", exist_ok=True)
+    #     df.to_json(f"dataframes/{file_name}.json", orient="records", force_ascii=False, indent=2)

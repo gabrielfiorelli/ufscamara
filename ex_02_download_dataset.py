@@ -6,7 +6,7 @@ Created on Sat Aug 23 19:02:02 2025
 """
 
 from util import config_reader
-from util.logger_config import logger
+from util.logger import logger
 from datetime import date
 from core.ufscamara import Ufscamara
 import numpy as np
@@ -66,11 +66,11 @@ resultado = ufscamara.download_arquivos_votacao_v2(dataInicio=data_inicio,
 ## Um código de votação como 2552333-8 significa que a proposicao é a 2552333 (sem o que vier após o -)
 ################################################################
 
-votacoes_df = ufscamara.carregar_votacoes()
+votacoes_df = ufscamara.data_manager.carregar_votacoes()
 
-ufscamara.salvar_dataframe(votacoes_df, 'votacoes')
+ufscamara.data_manager.salvar_dataframe(votacoes_df, 'votacoes')
 
-votacoes_df = ufscamara.carregar_dataframe('votacoes')
+votacoes_df = ufscamara.data_manager.carregar_dataframe('votacoes')
 
 votacoes_df.info()
 
@@ -80,7 +80,7 @@ votacoes_df.info()
 ## Estado: Funcionando
 ################################################################
 
-votacoes_df = ufscamara.carregar_dataframe('votacoes')
+votacoes_df = ufscamara.data_manager.carregar_dataframe('votacoes')
 
 ## Download PLEN
 orgaos = ['PLEN']
@@ -95,11 +95,12 @@ resultado = ufscamara.download_arquivos_votacoes_id_v2(votacoes_plenario_ids['id
 ## Estado: Funcionando
 ################################################################
 
-votacoes_id_df = ufscamara.carregar_votacoes_id()
+# AQUI
+votacoes_id_df = ufscamara.data_manager.carregar_votacoes_id()
 
-ufscamara.salvar_dataframe(votacoes_df, 'votacoes_id')
+ufscamara.data_manager.salvar_dataframe(votacoes_df, 'votacoes_id')
 
-votacoes_id_df = ufscamara.carregar_dataframe('votacoes_id')
+votacoes_id_df = ufscamara.data_manager.carregar_dataframe('votacoes_id')
 
 ################################################################
 ## DOWNLOAD DATA -> VOTACOES_VOTOS
@@ -107,7 +108,7 @@ votacoes_id_df = ufscamara.carregar_dataframe('votacoes_id')
 ## Estado: Funcionando
 ################################################################
 
-votacoes_df = ufscamara.carregar_dataframe('votacoes')
+votacoes_df = ufscamara.data_manager.carregar_dataframe('votacoes')
 
 ## Download PLEN
 orgaos = ['PLEN']
@@ -122,11 +123,11 @@ resultado = ufscamara.download_arquivos_votacoes_votos_v2(votacoes_plenario_ids[
 ## Estado: Funcionando
 ################################################################
 
-votos_df = ufscamara.carregar_votacoes_votos()
+votos_df = ufscamara.data_manager.carregar_votacoes_votos()
 
-ufscamara.salvar_dataframe(votos_df, 'votacoes_votos')
+ufscamara.data_manager.salvar_dataframe(votos_df, 'votacoes_votos')
 
-votos_df = ufscamara.carregar_dataframe('votacoes_votos')
+votos_df = ufscamara.data_manager.carregar_dataframe('votacoes_votos')
 
 votos_df.info()
 
@@ -136,7 +137,7 @@ votos_df.info()
 ## Estado: Funcionando
 ################################################################
 
-votacoes_df = ufscamara.carregar_dataframe('votacoes')
+votacoes_df = ufscamara.data_manager.carregar_dataframe('votacoes')
 
 ## Download PLEN
 orgaos = ['PLEN']
@@ -149,11 +150,11 @@ resultado = ufscamara.download_arquivos_votacoes_orientacoes_v2(votacoes_plenari
 ## Estado: Funcionando
 ################################################################
 
-votacoes_orientacoes_df = ufscamara.carregar_votacoes_orientacoes()
+votacoes_orientacoes_df = ufscamara.data_manager.carregar_votacoes_orientacoes()
 
-ufscamara.salvar_dataframe(votacoes_orientacoes_df, 'votacoes_orientacoes')
+ufscamara.data_manager.salvar_dataframe(votacoes_orientacoes_df, 'votacoes_orientacoes')
 
-votacoes_orientacoes_df = ufscamara.carregar_dataframe('votacoes_orientacoes')
+votacoes_orientacoes_df = ufscamara.data_manager.carregar_dataframe('votacoes_orientacoes')
 
 votacoes_orientacoes_df.info()
 
@@ -170,7 +171,7 @@ votacoes_orientacoes_df.info()
 # Para ter o tipo de proposicao é preciso fazer busca aqui.
 # A partir daqui podemos saber se é: PL, REQ e etc.
 
-votacoes_df = ufscamara.carregar_dataframe('votacoes')
+votacoes_df = ufscamara.data_manager.carregar_dataframe('votacoes')
 proposicoes_buscar = np.sort(votacoes_df['idProposicao'].unique())
 
 resultado = ufscamara.download_arquivos_proposicoes_id_v2(proposicoes_buscar)
@@ -181,11 +182,11 @@ resultado = ufscamara.download_arquivos_proposicoes_id_v2(proposicoes_buscar)
 ## Estado: Funcionando
 ################################################################
 
-proposicoes_id_df = ufscamara.carregar_proposicoes_id()
+proposicoes_id_df = ufscamara.data_manager.carregar_proposicoes_id()
 
-ufscamara.salvar_dataframe(proposicoes_id_df, 'proposicoes_id')
+ufscamara.data_manager.salvar_dataframe(proposicoes_id_df, 'proposicoes_id')
 
-proposicoes_id_df = ufscamara.carregar_dataframe('proposicoes_id')
+proposicoes_id_df = ufscamara.data_manager.carregar_dataframe('proposicoes_id')
 
 proposicoes_id_df.info()
 
@@ -195,7 +196,7 @@ proposicoes_id_df.info()
 ## Estado: Funcionando
 ################################################################
 
-votacoes_df = ufscamara.carregar_dataframe('votacoes')
+votacoes_df = ufscamara.data_manager.carregar_dataframe('votacoes')
 proposicoes_buscar = np.sort(votacoes_df['idProposicao'].unique())
 
 resultado = ufscamara.download_arquivos_proposicoes_temas_v2(proposicoes_buscar)
@@ -206,11 +207,11 @@ resultado = ufscamara.download_arquivos_proposicoes_temas_v2(proposicoes_buscar)
 ## Estado: Funcionando
 ################################################################
 
-proposicoes_temas_df = ufscamara.carregar_proposicoes_temas()
+proposicoes_temas_df = ufscamara.data_manager.carregar_proposicoes_temas()
 
-ufscamara.salvar_dataframe(proposicoes_temas_df, 'proposicoes_temas')
+ufscamara.data_manager.salvar_dataframe(proposicoes_temas_df, 'proposicoes_temas')
 
-proposicoes_temas_df = ufscamara.carregar_dataframe('proposicoes_temas')
+proposicoes_temas_df = ufscamara.data_manager.carregar_dataframe('proposicoes_temas')
 
 proposicoes_temas_df.info()
 
@@ -223,7 +224,7 @@ proposicoes_temas_df.info()
 ##      Deputados não está sendo usado ainda no dataset final
 ################################################################
 
-votos_df = ufscamara.carregar_dataframe('votacoes_votos')
+votos_df = ufscamara.data_manager.carregar_dataframe('votacoes_votos')
 
 ids_legislaturas = np.sort(votos_df['deputado_.idLegislatura'].unique())
 
@@ -235,11 +236,11 @@ resultado = ufscamara.download_arquivos_deputados_legislatura_v2(ids_legislatura
 ## Estado: Funcionando
 ################################################################
 
-deputados_df = ufscamara.carregar_deputados_legislaturas()
+deputados_df = ufscamara.data_manager.carregar_deputados_legislaturas()
 
-ufscamara.salvar_dataframe(deputados_df, 'deputados_legislatura')
+ufscamara.data_manager.salvar_dataframe(deputados_df, 'deputados_legislatura')
 
-deputados_df = ufscamara.carregar_dataframe('deputados_legislatura')
+deputados_df = ufscamara.data_manager.carregar_dataframe('deputados_legislatura')
 
 ################################################################
 ## DOWNLOAD DATA        -> REFERENCIAS_TIPOSPROPOSICAO
@@ -255,11 +256,11 @@ resultado = ufscamara.download_referencias_tiposproposicao_v2()
 ## Estado: Funcionando
 ################################################################
 
-tipos_proposicao_df = ufscamara.carregar_referencias_tiposproposicao()
+tipos_proposicao_df = ufscamara.data_manager.carregar_referencias_tiposproposicao()
 
-ufscamara.salvar_dataframe(tipos_proposicao_df, 'referencias_tiposproposicao')
+ufscamara.data_manager.salvar_dataframe(tipos_proposicao_df, 'referencias_tiposproposicao')
 
-tipos_proposicao_df = ufscamara.carregar_dataframe('referencias_tiposproposicao')
+tipos_proposicao_df = ufscamara.data_manager.carregar_dataframe('referencias_tiposproposicao')
 
 ################################################################
 ## Até aqui foi o exemplo de como utilizar as funções da UFSCamara para conseguir os dados.

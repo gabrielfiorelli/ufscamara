@@ -24,7 +24,7 @@ ufscamara = Ufscamara(config)
 ## VOTACOES
 ##--------------------
 
-votacoes_id_df = ufscamara.carregar_dataframe('votacoes_id')
+votacoes_id_df = ufscamara.data_manager.carregar_dataframe('votacoes_id')
 votacoes_id_df['idVotacao'] = votacoes_id_df['id']
 cols_to_remove = [
     "id",
@@ -46,7 +46,7 @@ votacoes_id_df['anoVotacao'] = votacoes_id_df['data'].dt.year
 ## VOTOS
 ##--------------------
 
-votos_df = ufscamara.carregar_dataframe('votacoes_votos')
+votos_df = ufscamara.data_manager.carregar_dataframe('votacoes_votos')
 cols_to_remove = [
     "dataRegistroVoto",
     "deputado_.uri",
@@ -61,7 +61,7 @@ votos_df = votos_df.drop(columns=cols_to_remove)
 ## PROPOSICOES
 ##--------------------
 
-proposicoes_df = ufscamara.carregar_dataframe('proposicoes_id')
+proposicoes_df = ufscamara.data_manager.carregar_dataframe('proposicoes_id')
 df_flat = pd.json_normalize(proposicoes_df["statusProposicao"]).add_prefix("statusProposicao.")
 proposicoes_df = pd.concat([proposicoes_df.drop(columns=["statusProposicao"]), df_flat], axis=1)
 del df_flat
@@ -93,7 +93,7 @@ proposicoes_df = proposicoes_df.drop(columns=cols_to_remove)
 ## TEMAS
 ##--------------------
 
-temas_df = ufscamara.carregar_dataframe('proposicoes_temas')
+temas_df = ufscamara.data_manager.carregar_dataframe('proposicoes_temas')
 
 cols_to_remove = [
     "codTema"]
@@ -104,7 +104,7 @@ temas_df = temas_df.drop(columns=cols_to_remove)
 ## ORIENTACOES
 ##--------------------
 
-orientacoes_df = ufscamara.carregar_dataframe('votacoes_orientacoes')
+orientacoes_df = ufscamara.data_manager.carregar_dataframe('votacoes_orientacoes')
 
 ## codTipoLideranca
 ## P = Partido
@@ -124,7 +124,7 @@ orientacoes_df["siglaPartidoBloco"] = orientacoes_df["siglaPartidoBloco"].replac
 ## GOVERNOS
 ##--------------------
 
-governos_df = ufscamara.carregar_dataframe('mandatos')
+governos_df = ufscamara.data_manager.carregar_dataframe('mandatos')
 governos_df['idGoverno'] = governos_df['id']
 
 cols_to_remove = [
@@ -214,14 +214,14 @@ df_final = (
 ## JOIN DOS DADOS
 ################################################################
 
-ufscamara.salvar_dataframe(df_final, '2025_11_07_df_completo')
+ufscamara.data_manager.salvar_dataframe(df_final, '2025_11_07_df_completo')
 del df_final
 
 ################################################################
 ## EXPLORAÇÃO
 ################################################################
 
-df = ufscamara.carregar_dataframe('2025_11_07_df_completo')
+df = ufscamara.data_manager.carregar_dataframe('2025_11_07_df_completo')
 
 df.info()
 
