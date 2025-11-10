@@ -28,7 +28,7 @@ ufscamara = Ufscamara(config)
 
 parameters = {
     "dataInicio": '2025-02-04',
-    "dataFim": '2025-02-04',
+    "dataFim": '2025-04-04',
     "ordenarPor": "dataHoraRegistro",
     "itens": 5,
     "pagina": 1,

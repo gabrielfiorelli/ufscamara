@@ -1,0 +1,17 @@
+{
+    "start_year": 1989,
+    "api_version": "v2",
+    "technical_config": {
+        "timeout": 60,
+        "results_per_page": 100,
+        "is_debug": false,
+        "max_retries": 1,
+        "seconds_to_wait": 1,
+        "retry_wait": 3,
+        "execution_type": "resume",
+        "download_files": true
+    },
+    "api_info": {
+        "base_url": "https://dadosabertos.camara.leg.br/api/v2/"
+    }
+}

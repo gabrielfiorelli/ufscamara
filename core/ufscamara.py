@@ -5,11 +5,11 @@ Created on Tue Aug 26 21:09:29 2025
 @author: BlinkPC
 """
 
-from core import api_camara
+from core import api_camara_v2
 from util import json_file_reader as fr
 from util import json_file_writer as fw
 from util.logger_config import logger
-from datetime import date, datetime
+from datetime import date
 from dateutil.relativedelta import relativedelta
 import pandas as pd
 import time
@@ -36,7 +36,7 @@ class Ufscamara:
         self.config = config
         self.tc = config["technical_config"]
         self.create_folders()
-        self.v2 = api_camara.v2
+        self.v2 = api_camara_v2
 
     def create_folders(self):
         folders = [
@@ -216,7 +216,7 @@ class Ufscamara:
             next_month = current + relativedelta(months=1)
             last_day = next_month - relativedelta(days=1)
         
-            dados_api = api_camara.v2.votacoes(id=id,
+            dados_api = self.v2.votacoes(id=id,
                                                idProposicao=idProposicao,
                                                idEvento=idEvento,
                                                idOrgao=idOrgao,
@@ -273,7 +273,7 @@ class Ufscamara:
             
             logger.info(f'[{self.class_name}] - Download dos detalhes da votacao {id_votacao}')
         
-            result = api_camara.v2.votacoes_id(id_votacao)
+            result = self.v2.votacoes_id(id_votacao)
             
             if(result is None):
                 logger.warning(f'[{self.class_name}] - Falha na requisição para {id_votacao}, ignorando.')
@@ -330,7 +330,7 @@ class Ufscamara:
             
             logger.info(f'[{self.class_name}] - Download dos votos da votacao {id_votacao}')
         
-            votos = api_camara.v2.votacoes_id_votos(id_votacao)
+            votos = self.v2.votacoes_id_votos(id_votacao)
             id_proposicao = id_votacao.split("-")[0]
             
             if votos is None:
@@ -393,7 +393,7 @@ class Ufscamara:
             
             logger.info(f'[{self.class_name}] - Download das orientacoes da votacao {id_votacao}')
         
-            orientacoes = api_camara.v2.votacoes_id_orientacoes(id_votacao)
+            orientacoes = self.v2.votacoes_id_orientacoes(id_votacao)
             id_proposicao = id_votacao.split("-")[0]
             
             if (orientacoes is None):
@@ -463,7 +463,7 @@ class Ufscamara:
                 anos_ja_existentes += 1
                 continue
             
-            resultados_ano = api_camara.v2.proposicoes(siglaTipo=siglaTipo,
+            resultados_ano = self.v2.proposicoes(siglaTipo=siglaTipo,
                                                        codTipo=codTipo,
                                                        idDeputadoAutor=idDeputadoAutor,
                                                        autor=autor,
@@ -530,7 +530,7 @@ class Ufscamara:
             
             logger.info(f'[{self.class_name}] - Download dos detalhes da votacao {id_str}')
         
-            response = api_camara.v2.proposicoes_id(_id)
+            response = self.v2.proposicoes_id(_id)
             
             if(response is None):
                 logger.warning(f'[{self.class_name}] - Falha na requisição para {id_str}, ignorando.')
@@ -579,7 +579,7 @@ class Ufscamara:
             
             logger.info(f'[{self.class_name}] - Download de autores da proposicao {id_str}')
         
-            response = api_camara.v2.proposicoes_id_autores(id_str)
+            response = self.v2.proposicoes_id_autores(id_str)
             
             if(response is None):
                 logger.info(f'[{self.class_name}] - Falha para a proposicao {id_str}')
@@ -639,7 +639,7 @@ class Ufscamara:
             
             logger.info(f'[{self.class_name}] - Download de temas da proposicao {id_str}')
         
-            temas = api_camara.v2.proposicoes_id_temas(id_str)
+            temas = self.v2.proposicoes_id_temas(id_str)
             
             if(temas is None):
                 logger.info(f'[{self.class_name}] - Falha para a proposicao {id_str}')
@@ -824,7 +824,7 @@ class Ufscamara:
         start_date = start_date = date(1989, 1, 1)
         end_date = date.today()
         
-        result = api_camara.v2.deputados(dataInicio=start_date.strftime("%Y-%m-%d"),
+        result = self.v2.deputados(dataInicio=start_date.strftime("%Y-%m-%d"),
                                          dataFim=end_date.strftime("%Y-%m-%d"),
                                          itens=200,
                                          ordenarPor="id",
@@ -863,7 +863,7 @@ class Ufscamara:
             
             logger.info(f'[{self.class_name}] - Download da listagem de deputados da legislatura {_id}')
             
-            dados = api_camara.v2.deputados(idLegislatura = _id,
+            dados = self.v2.deputados(idLegislatura = _id,
                                             itens = self.tc["results_per_page"],
                                             pagina=1,
                                             ordem="ASC",
@@ -920,7 +920,7 @@ class Ufscamara:
             
             logger.info(f'[{self.class_name}] - Download do deputado {id_str}')
         
-            dados = api_camara.v2.deputados_id(_id)
+            dados = self.v2.deputados_id(_id)
             
             if(dados is None):
                 logger.info(f'[{self.class_name}] - Falha para o deputado {id_str}')
@@ -968,7 +968,7 @@ class Ufscamara:
             
             logger.info(f'[{self.class_name}] - Download da legislatura {id_legislatura}')
         
-            dados = api_camara.v2.legislaturas_id(id_legislatura)
+            dados = self.v2.legislaturas_id(id_legislatura)
             
             if(dados is None):
                 logger.info(f'[{self.class_name}] - Falha para a legislatura {id_legislatura}')
@@ -1002,7 +1002,7 @@ class Ufscamara:
         
         logger.info(f'[{self.class_name}] - Download dos tipos de proposicao')
     
-        dados = api_camara.v2.referencias_tiposproposicao()
+        dados = self.v2.referencias_tiposproposicao()
         
         if(dados is None):
             logger.info(f'[{self.class_name}] - Falha para tipos de proposicao')
