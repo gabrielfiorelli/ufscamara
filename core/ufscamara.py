@@ -103,7 +103,7 @@ class Ufscamara:
         if('proposicoes' in endpoints):
             logger.info(f'[{self.class_name}] - Buscando todas as orientacoes')
             # Busca ano a ano
-            result = self.download_todos_arquivos_proposicoes_v2()
+            result = self.download_todos_arquivos_proposicoes_v2(ano_inicio=1989)
             logger.info(f'[{self.class_name}] - Resultado de proposicoes: {result}')
         
         logger.info(f'[{self.class_name}] - Filtrando ids de proposicoes')
@@ -133,7 +133,7 @@ class Ufscamara:
     
         if('deputados' in endpoints):
             logger.info(f'[{self.class_name}] - Buscando todos os deputados')
-            # Busca por período
+            # Busca id legislatura
             result = self.download_todos_arquivos_deputados_v2()
             logger.info(f'[{self.class_name}] - Resultado de deputados: {result}')
         
@@ -446,7 +446,9 @@ class Ufscamara:
                                                keywords=None,
                                                tramitacaoSenado=None,
                                                codSituacao=None,
-                                               codTema=None):
+                                               codTema=None,
+                                               ano_inicio=1989,
+                                               ano_fim=date.today().year + 1):
         type_name = 'proposicoes'
 
         anos_verificados = 0
@@ -456,7 +458,7 @@ class Ufscamara:
         
         file_dict = fu.get_proposicoes_dictionary()
         
-        for ano_busca in range(1989, date.today().year + 1):
+        for ano_busca in range(ano_inicio, ano_fim):
             anos_verificados += 1
             
             if(str(ano_busca) in file_dict):
@@ -674,23 +676,20 @@ class Ufscamara:
         
         return result
     
-    def download_todos_arquivos_legislaturas_v2(self):
-        result = None
-        #TODO
-            
-        return result
+
     
     def download_todos_arquivos_deputados_v2(self):
         type_name = 'deputados'
+
+        
         
         start_date = start_date = date(1989, 1, 1)
         end_date = date.today()
         
         result = self.v2.deputados(dataInicio=start_date.strftime("%Y-%m-%d"),
-                                         dataFim=end_date.strftime("%Y-%m-%d"),
-                                         itens=200,
-                                         ordenarPor="id",
-                                         paginate=True)
+                                   dataFim=end_date.strftime("%Y-%m-%d"),
+                                   ordenarPor="id",
+                                   paginate=True)
         
         fw.write_json_content_file_api_v2(result, 'all', type_name)
         
@@ -891,6 +890,8 @@ class Ufscamara:
         
         return result
     
-    # def salvar_dataframe(self, df, file_name):
-    #     os.makedirs("dataframes", exist_ok=True)
-    #     df.to_json(f"dataframes/{file_name}.json", orient="records", force_ascii=False, indent=2)
+    def download_todos_arquivos_legislaturas_v2(self):
+        result = None
+        #TODO
+            
+        return result

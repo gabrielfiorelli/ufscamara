@@ -25,10 +25,10 @@ endpoints_para_buscar = [
     #'votacoes_id',
     #'votacoes_votos',
     #'votacoes_orientacoes',
-    #'proposicoes',
+    'proposicoes',
     #'proposicoes_id',
     #'proposicoes_autores',
-    'proposicoes_temas'
+    #'proposicoes_temas'
     ]
 
 result = ufscamara.download_tudo(endpoints_para_buscar)
