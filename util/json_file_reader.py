@@ -300,7 +300,7 @@ def read_deputados_id_despesas_json_file_v2():
         with open(filepath, 'r', encoding='utf-8') as f:
             try:
                 json_content = json.load(f)
-                json_contents.append(json_content)
+                json_contents.extend(json_content)
             except json.JSONDecodeError as e:
                 logger.info(f'[read_json_file] - Error decoding JSON from file {filepath}: {e}')
     return json_contents
