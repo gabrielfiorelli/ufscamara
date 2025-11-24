@@ -134,8 +134,16 @@ class Ufscamara:
         if('deputados' in endpoints):
             logger.info(f'[{self.class_name}] - Buscando todos os deputados')
             # Busca id legislatura
-            result = self.download_todos_arquivos_deputados_v2()
+            result = self.download_arquivos_deputados_v2(dataInicio = "1989-01-01")
             logger.info(f'[{self.class_name}] - Resultado de deputados: {result}')
+            
+        deputados_ids = self.data_manager.carregar_deputados()["id"].unique().tolist()
+        
+        if('deputados_id' in endpoints):
+            logger.info(f'[{self.class_name}] - Buscando todas os deputados.id')
+            # Busca por ID de deputados
+            result = self.download_arquivos_deputados_id_v2(deputados_ids)
+            logger.info(f'[{self.class_name}] - Resultado de deputados.id: {result}')
         
         ################################################################
         ## Legislaturas
@@ -678,17 +686,28 @@ class Ufscamara:
     
 
     
-    def download_todos_arquivos_deputados_v2(self):
+    def download_arquivos_deputados_v2(self, id=None,
+                                             nome=None,
+                                             idLegislatura=None,
+                                             siglaUf=None,
+                                             siglaPartido=None,
+                                             siglaSexo=None,
+                                             dataInicio=None,
+                                             pagina=1,
+                                             itens=100):
         type_name = 'deputados'
 
         
-        
-        start_date = start_date = date(1989, 1, 1)
-        end_date = date.today()
-        
-        result = self.v2.deputados(dataInicio=start_date.strftime("%Y-%m-%d"),
-                                   dataFim=end_date.strftime("%Y-%m-%d"),
+        result = self.v2.deputados(id=None,
+                                   nome=None,
+                                   idLegislatura=None,
+                                   siglaUf=None,
+                                   siglaPartido=None,
+                                   siglaSexo=None,
+                                   dataInicio=dataInicio,
                                    ordenarPor="id",
+                                   pagina=1,
+                                   itens=100,
                                    paginate=True)
         
         fw.write_json_content_file_api_v2(result, 'all', type_name)
@@ -754,7 +773,6 @@ class Ufscamara:
             }
         
         return result
-    
     
     def download_arquivos_deputados_id_v2(self, ids):
         type_name = 'deputados_id'
