@@ -49,8 +49,9 @@ class Ufscamara:
             "raw_data_api_v2/proposicoes_autores",
             "raw_data_api_v2/proposicoes_temas",
             "raw_data_api_v2/deputados",
-            "raw_data_api_v2/deputados_id",
             "raw_data_api_v2/deputados_legislaturas",
+            "raw_data_api_v2/deputados_id",
+            "raw_data_api_v2/deputados_id_despesas",
             "raw_data_api_v2/legislaturas",
             "raw_data_api_v2/referencias_tiposproposicao",
             "dataframes",
@@ -144,6 +145,14 @@ class Ufscamara:
             # Busca por ID de deputados
             result = self.download_arquivos_deputados_id_v2(deputados_ids)
             logger.info(f'[{self.class_name}] - Resultado de deputados.id: {result}')
+            
+        if('deputados_id_despesas' in endpoints):
+            logger.info(f'[{self.class_name}] - Buscando todas os deputados.id.despsas')
+            # Busca por ID de deputados
+            anos = list(range(1989, date.today().year + 1))
+            result = self.download_arquivos_deputados_id_despesas_v2(ids = deputados_ids,
+                                                                     anos = anos)
+            logger.info(f'[{self.class_name}] - Resultado de deputados.id.despesas: {result}')
         
         ################################################################
         ## Legislaturas
@@ -684,7 +693,9 @@ class Ufscamara:
         
         return result
     
-
+    ################################################################
+    ## DEPUTADOS
+    ################################################################
     
     def download_arquivos_deputados_v2(self, id=None,
                                              nome=None,
@@ -826,6 +837,74 @@ class Ufscamara:
             }
         
         return result
+    
+    # Pode ser melhorado.
+    # Está fazendo iteração em todos os anos.
+    # O ideal é pegar apenas os anos em que o deputado ficou ativo.
+    def download_arquivos_deputados_id_despesas_v2(self,
+                                                   ids=None,
+                                                   anos=None,
+                                                   ordem="DESC",
+                                                   ordenarPor="ano"
+                                                   ):
+        type_name = 'deputados_id_despesas'
+        
+        ids_verificados = 0
+        ids_ja_existentes = 0
+        ids_baixados = 0
+        ids_nao_encontrados = 0
+        
+        total = len(ids)
+        deputados_id_despesas_dict = fu.get_deputados_id_despesas_dictionary()
+           
+        for _id in ids:
+            ids_verificados += 1
+            progresso = (ids_verificados / total) * 100
+            id_str = str(_id)
+            
+            logger.info(f'[{self.class_name}] - Processando {ids_verificados}/{total} ({progresso:.2f}%), próximo id {id_str}')
+            
+            for _ano in anos:
+                if(id_str in deputados_id_despesas_dict):
+                    logger.info(f'[{self.class_name}] - Dados de despesas do ano {_ano} para o deputado {id_str} já existe.')
+                    ids_ja_existentes += 1
+                    continue
+                
+                logger.info(f'[{self.class_name}] - Download do deputado {id_str}')
+            
+                dados = self.v2.deputados_id_despesas(id=_id,
+                                                      ano=_ano,
+                                                      ordem=ordem,
+                                                      ordenarPor=ordenarPor,
+                                                      paginate=True)
+                
+                if(dados is None):
+                    logger.info(f'[{self.class_name}] - Falha para o deputado {id_str}')
+                    continue
+    
+                if (dados is None or len(dados) == 0):
+                    ids_nao_encontrados += 1
+                    logger.info(f'[{self.class_name}] - Deputado não encontrado {id_str}')
+                    logger.info(f'[{self.class_name}] - Waiting {self.tc["seconds_to_wait"]} seconds')
+                    time.sleep(self.tc["seconds_to_wait"])
+                    continue
+                
+                fw.write_json_content_file_api_v2(dados, f"{_id}_{_ano}", type_name)
+                logger.info(f'[{self.class_name}] - Waiting {self.tc["seconds_to_wait"]} seconds')
+                time.sleep(self.tc["seconds_to_wait"])
+        
+        result = {
+                "ids_verificados": ids_verificados,
+                "ids_ja_existentes": ids_ja_existentes,
+                "ids_baixados": ids_baixados,
+                "ids_nao_encontrados": ids_nao_encontrados
+            }
+        
+        return result
+    
+    ################################################################
+    ## LEGISLATURAS
+    ################################################################
     
     def download_arquivos_legislaturas_v2(self, ids_legislaturas):
         type_name = 'legislaturas'

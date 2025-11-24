@@ -243,6 +243,10 @@ def read_proposicoes_id_json_file_v2():
                 logger.info(f'[read_json_file] - Error decoding JSON from file {filepath}: {e}')
     return json_contents
 
+################################################################
+## DEPUTADOS
+################################################################
+
 def read_deputados_json_file_v2():
     data_folder = 'raw_data_api_v2'
     name_filter = 'deputados'
@@ -285,6 +289,25 @@ def read_deputados_id_json_file_v2():
             except json.JSONDecodeError as e:
                 logger.info(f'[read_json_file] - Error decoding JSON from file {filepath}: {e}')
     return json_contents
+
+def read_deputados_id_despesas_json_file_v2():
+    data_folder = 'raw_data_api_v2'
+    name_filter = 'deputados_id_despesas'
+    files = get_file_list(f"{data_folder}/{name_filter}/", name_filter)
+    json_contents = []
+    
+    for filepath in files:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            try:
+                json_content = json.load(f)
+                json_contents.append(json_content)
+            except json.JSONDecodeError as e:
+                logger.info(f'[read_json_file] - Error decoding JSON from file {filepath}: {e}')
+    return json_contents
+
+################################################################
+## LEGISLATURAS
+################################################################
 
 def read_legislaturas_json_file_v2():
     data_folder = 'raw_data_api_v2'

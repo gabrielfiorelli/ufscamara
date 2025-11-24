@@ -71,9 +71,18 @@ def get_votacoes_orientacoes_dictionary():
     files_dict = create_dict(files, "votacoes_orientacoes_")
     return files_dict
 
+################################################################
+## DEPUTADOS
+################################################################
+
 def get_deputados_dictionary():
     files = get_file_list_v2('v2', "deputados")
     files_dict = create_dict(files, "deputados_")
+    return files_dict
+
+def get_deputados_legislaturas_dictionary():
+    files = get_file_list_v2('v2', "deputados_legislaturas")
+    files_dict = create_dict(files, "deputados_legislaturas_")
     return files_dict
 
 def get_deputados_id_dictionary():
@@ -81,10 +90,14 @@ def get_deputados_id_dictionary():
     files_dict = create_dict(files, "deputados_id_")
     return files_dict
 
-def get_deputados_legislaturas_dictionary():
-    files = get_file_list_v2('v2', "deputados_legislaturas")
-    files_dict = create_dict(files, "deputados_legislaturas_")
+def get_deputados_id_despesas_dictionary():
+    files = get_file_list_v2('v2', "deputados_id_despesas")
+    files_dict = create_dict(files, "deputados_id_despesas_")
     return files_dict
+
+################################################################
+## LEGISLATURAS
+################################################################
 
 def get_legislaturas_dictionary():
     files = get_file_list_v2('v2', "legislaturas")

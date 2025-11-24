@@ -30,7 +30,8 @@ endpoints_para_buscar = [
     #'proposicoes_autores',
     #'proposicoes_temas'
     #'deputados',
-    'deputados_id'
+    #'deputados_id',
+    'deputados_id_despesas'
     ]
 
 result = ufscamara.download_tudo(endpoints_para_buscar)
