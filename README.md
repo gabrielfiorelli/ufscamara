@@ -53,7 +53,6 @@ ufscamara/
  ├── util/           ← utilidades (logger, config, file utils)
  ├── raw_data_api_v2 ← dados brutos baixados da API
  ├── dataframes/     ← DataFrames salvos
- ├── imagens/        ← gráficos e figuras geradas
  ├── logs/           ← logs automáticos
  └── ex_*.py         ← exemplos de uso
 ```
