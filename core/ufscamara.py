@@ -844,6 +844,8 @@ class Ufscamara:
     def download_arquivos_deputados_id_despesas_v2(self,
                                                    ids=None,
                                                    anos=None,
+                                                   mes=None,
+                                                   cnpjCpfFornecedor=None,
                                                    ordem="DESC",
                                                    ordenarPor="ano"
                                                    ):
@@ -873,8 +875,10 @@ class Ufscamara:
         
             dados = self.v2.deputados_id_despesas(id=_id,
                                                   ano=anos,
+                                                  mes=mes,
                                                   ordem=ordem,
                                                   ordenarPor=ordenarPor,
+                                                  cnpjCpfFornecedor=cnpjCpfFornecedor,
                                                   paginate=True)
             
             if(dados is None):
